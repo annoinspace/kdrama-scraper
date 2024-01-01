@@ -5,7 +5,7 @@ import cheerio from "cheerio"
 const app = express()
 const port = process.env.PORT || 8000
 
-const url = "https://mydramalist.com/shows/top"
+const url = process.env.URL_1
 
 axios
   .get(url)
