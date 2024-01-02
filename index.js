@@ -44,23 +44,43 @@ const scrapePage = async (pageNumber) => {
         dramas.push(title)
       }
     })
-
+    return dramas
     // dramas now contains titles of Korean dramas
-    console.log(dramas)
+    // console.log(dramas)
   } catch (error) {
     console.error(`Error scraping page ${pageNumber}:`, error)
   }
 }
+const main = async (total) => {
+  const totalPages = total
+  console.log("---scraping for dramas")
+  let allDramas = []
+  let currentBatch = []
 
-const main = async () => {
-  const totalPages = 2
   for (let page = 1; page <= totalPages; page++) {
-    await scrapePage(page)
+    const dramasFromPage = await scrapePage(page)
+    dramasFromPage.forEach((drama) => {
+      currentBatch.push(drama)
+      if (currentBatch.length === 20) {
+        allDramas.push([...currentBatch])
+        currentBatch = []
+      }
+    })
+
     // Consider adding a delay here to reduce server load
+    await new Promise((resolve) => setTimeout(resolve, 1000)) // 1 second delay
   }
+
+  // Add any remaining dramas in the last batch
+  if (currentBatch.length > 0) {
+    allDramas.push([...currentBatch])
+  }
+
+  console.log(allDramas)
+  console.log("---scraping for dramas completed")
 }
 
-main()
+main(10)
 
 app.listen(port, () => {
   console.log("server running on port ", port)
